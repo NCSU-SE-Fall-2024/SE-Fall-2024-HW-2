@@ -1,0 +1,38 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install autopep8 pylint pytest pyright
+
+    - name: Check AutoPep8 Formatting
+      run: |
+        autopep8 --diff --aggressive --aggressive hw2_debugging.py
+      continue-on-error: true
+
+    - name: Run Pyright
+      run: |
+        pyright hw2_debugging.py
+      continue-on-error: true
+
+    - name: Run Pylint
+      run: |
+        pylint hw2_debugging.py
+      continue-on-error: true
+
+    - name: Run Tests
+      run: |
+        pytest
