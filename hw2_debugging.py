@@ -1,3 +1,6 @@
+"""
+This function sorts arrays of numbers using merge sort technique
+"""
 import rand
 
 def merge_sort(arr):
@@ -34,7 +37,7 @@ def recombine(left_arr, rightArr):
 
     return mergeArr
 
-arr = rand.random_array([None] * 20)
-arr_out = merge_sort(arr)
+arr_in = rand.random_array([None] * 20)
+arr_out = merge_sort(arr_in)
 
 print(arr_out)
