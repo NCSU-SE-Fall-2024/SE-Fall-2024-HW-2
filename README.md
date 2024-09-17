@@ -5,7 +5,6 @@
 ![Pylint](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/NCSU-SE-Fall-2024/SE-Fall-2024-HW-2/main/badges/pylint.json)
 ![Pyright Status](https://img.shields.io/badge/pyright-score--100%25-brightgreen)
 ![AutoPep8 Status](https://img.shields.io/badge/autopep8-compliant-brightgreen)
-![Code Quality](https://img.shields.io/badge/Code_Quality-A-brightgreen)
 
 
 
