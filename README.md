@@ -2,10 +2,8 @@
 ![Static Badge](https://img.shields.io/badge/license-Apache%202.0-blue)
 ![Static Badge](https://img.shields.io/badge/platform-linux-red)
 
+
 ![Pylint](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/NCSU-SE-Fall-2024/SE-Fall-2024-HW-2/main/badges/pylint.json)
-![Pyright Status](https://img.shields.io/badge/pyright-score--100%25-brightgreen)
-![AutoPep8 Status](https://img.shields.io/badge/autopep8-compliant-brightgreen)
+![Pyright](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/NCSU-SE-Fall-2024/SE-Fall-2024-HW-2/main/badges/pyright.json)
+![Autopep8](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/NCSU-SE-Fall-2024/SE-Fall-2024-HW-2/main/badges/autopep8.json)
 
-
-
-SE homework-2
