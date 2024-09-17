@@ -3,7 +3,7 @@ name: Python CI
 on: [push, pull_request]
 
 jobs:
-  test:
+  test_and_static_analysis:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,123 +14,87 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
         pip install autopep8 pylint pytest pyright
 
+    # Autopep8 formatting check and badge update
     - name: Check AutoPep8 Formatting
       run: |
         autopep8 --diff --aggressive --aggressive hw2_debugging.py
       continue-on-error: true
 
+    - name: Update Autopep8 Badge
+      run: |
+        diff=$(git diff)
+        formatted="true"
+        if [[ ! -z "$diff" ]]; then
+          formatted="false"
+        fi
+        color="green"
+        if [[ "$formatted" == "false" ]]; then
+          color="red"
+        fi
+        echo '{
+          "schemaVersion": 1,
+          "label": "autopep8",
+          "message": "formatted",
+          "color": "'$color'"
+        }' > badges/autopep8.json
+
+    # Pyright type checking and badge update
     - name: Run Pyright
       run: |
         pyright hw2_debugging.py
       continue-on-error: true
 
+    - name: Update Pyright Badge
+      run: |
+        pyright_errors=$(pyright --outputjson | jq '.summary.errorCount')
+        color="green"
+        if [[ "$pyright_errors" -gt 0 ]]; then
+          color="red"
+        fi
+        echo '{
+          "schemaVersion": 1,
+          "label": "pyright",
+          "message": "'$pyright_errors' errors",
+          "color": "'$color'"
+        }' > badges/pyright.json
+
+    # Pylint check and badge update
     - name: Run Pylint
       run: |
         pylint hw2_debugging.py
       continue-on-error: true
 
+    - name: Generate Pylint Report
+      id: pylint
+      run: |
+        pylint_score=$(pylint --exit-zero **/*.py --output-format=json | jq '[.[].score | select(. != null)] | add / length')
+        color="red"
+        if (( $(echo "$pylint_score >= 8" | bc -l) )); then
+          color="green"
+        elif (( $(echo "$pylint_score >= 5" | bc -l) )); then
+          color="yellow"
+        fi
+        echo '{
+          "schemaVersion": 1,
+          "label": "pylint",
+          "message": "'$pylint_score'/10",
+          "color": "'$color'"
+        }' > badges/pylint.json
+
+    # Pytest for unit tests
     - name: Run Tests
       run: |
         pytest
-  static_analysis:
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Run pylint
-      - name: Install pylint
-        run: pip install pylint
-      - name: Run pylint
-        run: pylint **/*.py
-        continue-on-error: true
-      - name: Generate pylint report
-        id: pylint
-        run: |
-          pylint_score=$(pylint --exit-zero **/*.py --output-format=json | jq '[.[].score | select(. != null)] | add / length')
-          echo "::set-output name=score::$pylint_score"
-
-      - name: Update pylint badge
-        run: |
-          pylint_score=$(pylint **/*.py --output-format=json | jq '[.[].score] | add / length')
-          color="red"
-          if (( $(echo "$pylint_score >= 8" | bc -l) )); then
-            color="green"
-          elif (( $(echo "$pylint_score >= 5" | bc -l) )); then
-            color="yellow"
-          fi
-          echo '{
-            "schemaVersion": 1,
-            "label": "pylint",
-            "message": "'$pylint_score'/10",
-            "color": "'$color'"
-          }' > badges/pylint.json
-
-      # Run pyright
-      - name: Install pyright
-        run: npm install -g pyright
-      - name: Run pyright
-        run: pyright
-        continue-on-error: true
-      - name: Generate pyright report
-        id: pyright
-        run: |
-          pyright_errors=$(pyright --outputjson | jq '.summary.errorCount')
-          echo "::set-output name=errors::$pyright_errors"
-
-      - name: Update pyright badge
-        run: |
-          pyright_errors=$(pyright --outputjson | jq '.summary.errorCount')
-          color="green"
-          if [[ "$pyright_errors" -gt 0 ]]; then
-            color="red"
-          fi
-          echo '{
-            "schemaVersion": 1,
-            "label": "pyright",
-            "message": "'$pyright_errors' errors",
-            "color": "'$color'"
-          }' > badges/pyright.json
-
-      # Run autopep8
-      - name: Install autopep8
-        run: pip install autopep8
-      - name: Run autopep8
-        run: autopep8 --in-place --recursive .
-      - name: Check formatting
-        run: |
-          diff=$(git diff)
-          if [[ -z "$diff" ]]; then
-            echo "No changes, code is formatted correctly."
-            echo "::set-output name=formatted::true"
-          else:
-            echo "Code formatting required!"
-            echo "::set-output name=formatted::false"
-          fi
-
-      - name: Update autopep8 badge
-        run: |
-          formatted=true # This should be updated based on your logic
-          color="green"
-          if [[ "$formatted" == "false" ]]; then
-            color="red"
-          fi
-          echo '{
-            "schemaVersion": 1,
-            "label": "autopep8",
-            "message": "formatted",
-            "color": "'$color'"
-          }' > badges/autopep8.json
-
-      - name: Commit badge updates
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add badges/*.json
-          git commit -m "Update badges"
-          git push
+    # Commit updated badges back to the repository
+    - name: Commit badge updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add badges/*.json
+        git commit -m "Update badges"
+        git push
