@@ -71,7 +71,7 @@ jobs:
     - name: Generate Pylint Report
       id: pylint
       run: |
-        pylint_score=$(pylint --exit-zero hw2_debugging.py --output-format=json | jq '[.[].score | select(. != null)] | add / length')
+        pylint_score=$(pylint --exit-zero hw2_debugging.py --output-format=json | jq '[.[].score | select(. != null)] | if length > 0 then add / length else 0 end')
         color="red"
         if (( $(echo "$pylint_score >= 8" | bc -l) )); then
           color="green"
@@ -84,6 +84,7 @@ jobs:
           "message": "'$pylint_score'/10",
           "color": "'$color'"
         }' > badges/pylint.json
+
 
     # Pytest for unit tests
     - name: Run Tests
