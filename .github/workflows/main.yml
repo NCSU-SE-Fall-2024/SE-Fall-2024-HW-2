@@ -52,7 +52,7 @@ jobs:
       - name: Generate pylint report
         id: pylint
         run: |
-          pylint_score=$(pylint --exit-zero **/*.py --output-format=json | jq '[.[].score] | add / length')
+          pylint_score=$(pylint --exit-zero **/*.py --output-format=json | jq '[.[].score | select(. != null)] | add / length')
           echo "::set-output name=score::$pylint_score"
 
       - name: Update pylint badge
