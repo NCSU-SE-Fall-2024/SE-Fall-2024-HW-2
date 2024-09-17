@@ -18,13 +18,7 @@ jobs:
       run: |
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
 
-    - name: Commit badge updates
-      run: |
-        git config --local user.email "ssdeety@gmail.com"
-        git config --local user.name "ShanmukhaSreenivas"
-        git add badges/*.json
-        git commit -m "Update badges"
-        git push origin HEAD:main
+    
         
     - name: Install Python dependencies
       run: |
@@ -106,8 +100,8 @@ jobs:
     # Commit updated badges back to the repository
     - name: Commit badge updates
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "ssdeety@gmail.com"
+        git config --local user.name "ShanmukhaSreenivas"
         git add badges/*.json
         git commit -m "Update badges"
-        git push
+        git push origin HEAD:main
