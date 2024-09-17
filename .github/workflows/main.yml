@@ -14,6 +14,18 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Set up GitHub token
+      run: |
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+    - name: Commit badge updates
+      run: |
+        git config --local user.email "ssdeety@gmail.com"
+        git config --local user.name "ShanmukhaSreenivas"
+        git add badges/*.json
+        git commit -m "Update badges"
+        git push origin HEAD:main
+        
     - name: Install Python dependencies
       run: |
         pip install autopep8 pylint pytest pyright
