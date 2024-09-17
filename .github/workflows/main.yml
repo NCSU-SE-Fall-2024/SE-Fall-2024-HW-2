@@ -97,7 +97,7 @@ jobs:
       run: |
         pytest
 
-    # Commit updated badges back to the repository
+    # Commit updated badges back to the repo
     - name: Commit badge updates
       run: |
         git config --local user.email "ssdeety@gmail.com"
